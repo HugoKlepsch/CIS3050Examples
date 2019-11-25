@@ -1,0 +1,20 @@
+
+
+CFLAGS	= -g
+LDLIBS	=
+LIB		= libTbsd.so
+
+EXE		= testloadBSD
+OBJS	= main-BSD.o 
+
+$(EXE): $(OBJS) lib/$(LIB)
+	$(CC) $(CFLAGS) -Llib -rdynamic -o $(EXE) $(OBJS) $(LDLIBS)
+
+lib/$(LIB):
+	cd lib ; make -f Makefile.FreeBSD $(LIB)
+
+clean:
+	- rm -f $(EXE)
+	- rm -f $(OBJS)
+	( cd lib ; make -f Makefile.FreeBSD clean )
+

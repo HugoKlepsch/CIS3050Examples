@@ -1,0 +1,70 @@
+#!/bin/sh
+
+# This shows some "inline" python scripting
+
+A=3.5
+B=4.2
+
+C=`python -c "print ${A} + ${B}"` 
+
+echo "${A} + ${B} = ${C}"
+
+
+OUT=`python -c '
+import sys
+import string
+import math
+
+
+numValues = 0
+mean = 0
+sum = 0
+data = []
+
+
+
+# read the first line to start
+line = sys.stdin.readline()
+while len(line) > 0:
+
+	# split up by commas
+	for token in string.split(line, '"'"','"'"'):
+
+		if len(token) > 0:
+			# convert the values to floats
+			try:
+				floatvalue = float(token)
+			except ValueError:
+				sys.stderr.write("Bad value '"'"'%s'"'"'\n" % token)
+				sys.exit(1)
+
+			# store the values
+			data.append( floatvalue )
+			numValues = numValues + 1
+
+			# and add to our running total
+			sum = sum + floatvalue
+
+	line = sys.stdin.readline()
+
+mean = sum / numValues
+
+if numValues == 1:
+	variance = 0
+else:
+	sum = 0
+	for value in data:
+		difference = mean - value
+
+		sum = sum + ( difference * difference )
+
+	variance = sum / (numValues - 1)
+
+sys.stdout.write("%f %f\n" % (variance, math.sqrt(variance)));
+' -`
+
+V=`echo ${OUT} | sed -e 's/ .*//'`
+S=`echo ${OUT} | sed -e 's/.* //'`
+echo "Variance : ${V}"
+echo "Std Dev  : ${S}"
+

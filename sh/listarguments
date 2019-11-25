@@ -1,0 +1,58 @@
+#!/bin/sh
+
+#
+# Demonstrates some interesting argument handling techniques.
+# Try running as:
+#	listarguments -a one two three "1 2 3"
+#
+
+# note that the version of the variable we want expanded must
+# be outside the single quotes - but can be in double quotes
+# if we may be managing spaces within the expansion.
+echo 'The PID this shell is running as is $$='$$
+
+if [ $# -lt 1 ]
+then
+    echo "Note:"
+    echo "This program won't do much unless you supply arguments."
+    echo "Try some with spaces in them, and some without."
+    echo "Here we go anyway..."
+fi
+
+
+# the construction "$@" expands the argument list
+# "as though each argument was in quotes"
+echo '$@='"$@"
+
+# This handles each expression from the command line, as though
+# each one was in quotes
+echo "Printing arguments individually:"
+for arg in "$@"
+do
+	echo '  ${arg}: '${arg}
+done
+
+# shift moves the argument list up by one, getting rid of the old argv[1]
+echo "shifting..."
+shift
+
+echo '$@='"$@"
+
+echo "shifting again..."
+shift
+
+echo '$@='"$@"
+echo "Printing individually again:"
+for arg in "$@"
+do
+	echo "  [${arg}]"
+done
+
+# the construction "$*" expands the argument list "without quotes"
+echo '$*='"$*"
+echo "Printing with star:"
+for arg in $*
+do
+	echo "  [${arg}]"
+done
+

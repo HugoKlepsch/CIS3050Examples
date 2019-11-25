@@ -1,0 +1,20 @@
+
+CC		= gcc
+CFLAGS	= -g
+LDLIBS	= -ldl 
+LIB		= libT++.so
+
+EXE		= testload
+OBJS	= main.o 
+
+$(EXE): $(OBJS) lib/$(LIB)
+	$(CC) $(CFLAGS) -Llib -rdynamic -o $(EXE) $(OBJS) $(LDLIBS)
+
+lib/$(LIB):
+	cd lib ; make -f Makefile.Linux $(LIB)
+
+clean:
+	- rm -f $(EXE)
+	- rm -f $(OBJS)
+	( cd lib ; make -f Makefile.Linux clean )
+

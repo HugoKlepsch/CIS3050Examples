@@ -1,0 +1,98 @@
+#!/bin/sh
+
+#
+# List all the extensions found in a named list of directory heirarchies
+#
+
+
+# This is a variable storing a temporary file name.  Note that $$ is our
+# process ID, which is guaranteed to be unique for the time-span that our
+# process is running, so if the same script is running in a different
+# window or by a different user, it can't possibly be the same process
+# ID as us
+TMP_EXTENSIONS="/tmp/listextensions.$$"
+
+
+# Set up a "trap" to clean up nicely on failure.
+#
+# If we get any of the signals indicated by number, the short script
+# which is argument one to trap (the string enclosed by "") will run.
+# Note that it in turn has another string, enclosed by '' that is being
+# printed to standard output.
+#
+# The signals being handled here are:
+# 1 - SIGHUP : "hangup" - the window closed
+# 2 - SIGINT : "interrupt" - the user pressed ^C
+# 15 - SIGTERM : "terminate" - someone sent us a "kill" notice
+trap "echo 'Cleaning up . . .' >&2 ; \
+            rm -rf ${TMP_EXTENSIONS} ; \
+            exit 1" \
+        1 2 15
+
+
+# Make sure that the command line contains the name of a directory
+# by using the "test(1)" command, and looking at the shell equivalent
+# of 'argc' -- the $# variable holds the number of arguments given
+# to the program
+if [ $# -lt 1 ]
+then
+    # The >&2 at the end of this line redirects the output
+    # to file descriptor 2 (stderr)
+    echo "No directory given on the command line." >&2
+    echo "Aborting!" >&2
+    exit -1
+fi
+
+# Loop over everything on the command line
+for DIR in "$@"
+do
+
+    # Make sure that we are talking about a directory
+    if [ ! -d "${DIR}" ]
+    then
+        echo "${DIR} is not a directory!  Aborting!" >&2
+        exit 1
+    fi
+
+    # Change to this directory, and list all of the files
+    # Use a subshell (the parentheses) so that the "cd"
+    # is local
+    (
+        cd "${DIR}"
+
+        # Loop over all the things in the directory
+        for filepath in *
+        do
+            ## basename and dirname assist in parsing paths
+            fileonly=`basename "${filepath}"`
+
+            # use expr to determine if the name has a dot in it
+            if [ `expr "${fileonly}" : ".*[.].*"` -gt 0 ]
+            then
+                # note the three part pipe, the backquotes, and the
+                # use of sed here
+                ext=`echo ${fileonly} | tr 'A-Z' 'a-z' | sed -e 's/.*[.]//'`
+                # append the result onto our list
+                echo $ext >> ${TMP_EXTENSIONS}
+            fi
+        done
+    )
+done
+
+# figure out whether we in fact saw anything . . .
+if [ -s ${TMP_EXTENSIONS} ]
+then
+
+    # At this point, ${TMP_EXTENSIONS} will contain every extension seen, so
+    # we want to collapse this list to simply have only unique entries.
+    # Most UNIX type systems (but not quite all) have a command uniq(1)
+    # that does this.  On most of these systems, sort(1) and uniq(1) are
+    # acutally hard-linked together
+    sort -u ${TMP_EXTENSIONS}
+
+    # Clean up, as we are done
+    rm -f ${TMP_EXTENSIONS}
+fi
+
+# return status at end of script will be that of the last command run,
+# if no explicit exit status is given

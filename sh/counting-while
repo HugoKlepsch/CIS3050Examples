@@ -1,0 +1,39 @@
+#!/bin/sh
+
+MAX=3
+
+# use an if statement to check if we have a value at the command line
+if [ $# -gt 0 ]
+then
+    MAX=$1
+    echo "Will count to $MAX based on command line option"
+fi
+
+
+# initialize the counter
+counterOne=0
+counterTwo=0
+
+# use test(1) (aka '[') to determine if we have reached the limit
+# of the range we wish to count to
+while [ $counterOne -lt ${MAX} ]
+do
+	echo "Loop variables are now ${counterOne} and ${counterTwo}"
+
+	# The shell specification has been updated to include the
+    # ability to do math in these funny dollar-double-bracket
+	# expressions, but the original shell didn't have this
+	counterOne=$(( $counterOne + 1 ))
+
+	# Originally, we had to do this:
+    # * use the external program expr(1) to calculate
+    #   the "expression" given to it as its command line, and
+    # * then take its standard output and combine it with the
+    #   command line in order to assign it to a variable
+    #
+    # Note the use of back-quotes to substitute the output of
+    # expr(1) into the variable assignment
+	counterTwo=`expr $counterTwo + 1`
+
+done
+

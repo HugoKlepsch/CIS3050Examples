@@ -1,0 +1,33 @@
+#!/bin/sh
+
+#
+# Copy stdin to a FIFO as a series of separate open+write
+#
+
+# variable for our pipe
+fifo=/tmp/myFIFO-$USER.$$
+
+# clean up on successful exit, as well as HUP, INTR and KILL
+trap "rm -f $fifo; exit 0" 0 1 2 15
+
+if
+    mkfifo $fifo
+then
+    echo "Successfully created FIFO (named pipe) $fifo"
+else
+    echo "Error: Failed creating FIFO $fifo"
+fi
+
+echo 'Now copying stdin into the FIFO.  Type "quit" to stop'
+
+# read from stdin, stopping when told to "quit"
+while read line
+do
+    # open the FIFO and put the data there
+    echo $line > $fifo
+    if [ "$line" = 'quit' ]
+    then
+        # leave the while loop
+        break
+    fi
+done

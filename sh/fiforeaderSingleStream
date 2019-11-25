@@ -1,0 +1,36 @@
+#!/bin/sh
+
+#
+# Read all the data available from a FIFO after opening the file once
+#
+
+if [ $# -ne 1 ]
+then
+    echo "Need the name of the FIFO to read from" >&2
+    exit -1
+fi
+
+# give the FIFO value a better name
+fifo=$1
+
+if [ ! -p $fifo ]; then
+    echo "The FIFO ${fifo} doesn't exist - is a writing running?"
+    exit 1
+fi
+
+# Bundle the loop within a group so that a single open is performed
+{
+    while read line
+    do
+        if [ "$line" = 'quit' ]
+        then
+            # leave the while loop
+            break
+        fi
+        # print out what we got
+        echo $line
+    done
+} < $fifo
+
+# 
+echo "Reader exiting"

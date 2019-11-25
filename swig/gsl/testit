@@ -1,0 +1,27 @@
+#!/usr/bin/env python2
+
+#
+# Python test code to load and print a matrix
+#
+
+import gsl
+import sys
+import math
+
+matrix = gsl.matrixAlloc(3,3);
+
+gsl.matrixSetValue(matrix, 0, 0, 1);
+gsl.matrixSetValue(matrix, 1, 1, 10);
+gsl.matrixSetValue(matrix, 2, 2, 100);
+
+gsl.matrixSetValue(matrix, 0, 1, 0.5);
+gsl.matrixSetValue(matrix, 0, 2, 1.75);
+gsl.matrixSetValue(matrix, 1, 2, math.sqrt(2.0));
+
+for i in range(0, 3):
+    sys.stdout.write("%3d :" % i)
+    for j in range(0, 3):
+	v = gsl.matrixGetValue(matrix, i, j)
+	sys.stdout.write(" %10.6f" % v)
+    sys.stdout.write("\n");
+

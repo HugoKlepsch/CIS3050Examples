@@ -1,0 +1,19 @@
+
+CFLAGS	= -g
+LDLIBS	= -ldl
+LIB		= libTlinux.so
+
+EXE		= testloadLinux
+OBJS	= main-Linux.o 
+
+$(EXE): $(OBJS) lib/$(LIB)
+	$(CC) $(CFLAGS) -Llib -rdynamic -o $(EXE) $(OBJS) $(LDLIBS)
+
+lib/$(LIB):
+	cd lib ; make -f Makefile.Linux $(LIB)
+
+clean:
+	- rm -f $(EXE)
+	- rm -f $(OBJS)
+	( cd lib ; make -f Makefile.Linux clean )
+

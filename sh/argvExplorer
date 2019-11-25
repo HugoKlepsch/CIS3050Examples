@@ -1,0 +1,16 @@
+#!/bin/sh
+
+echo '$@='$@
+echo '"$@"='"$@"
+
+echo "first version using $@"
+for arg in $@
+do
+    echo 'arg within $@ is '"'$arg'"
+done
+
+echo 'second version using \"$@\"'
+for arg in "$@"
+do
+    echo 'arg within "$@" is '"'$arg'"
+done

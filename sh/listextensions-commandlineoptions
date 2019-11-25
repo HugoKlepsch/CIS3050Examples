@@ -1,0 +1,91 @@
+#!/bin/sh
+
+#
+# List all the extensions found in a named list of directory heirarchies
+#
+
+
+# This is a variable storing a temporary file name.  Note that $$ is our
+# process ID, which is guaranteed to be unique for the time-span that our
+# process is running.
+TMP_EXTENSIONS="/tmp/listextensions.$$"
+
+
+# Set up a "trap" to clean up on failure.  If we get any of the signals
+# indicated by number, the short script which is argument one to trap
+# (the string enclosed by "") will run.  Note that it in turn has another
+# string, enclosed by ''
+trap "echo 'Cleaning up . . .' >&2 ; \
+			rm -rf ${TMP_EXTENSIONS} ; \
+			exit 1" \
+		1 2 15
+
+
+# Process any names passed on the command line
+for arg in "$@"
+do
+	case "${arg}" in
+	-[hH]*)
+		# If we get a -h, or a -H, print a help message
+		echo ""	 >&2
+		echo "Use:"	 >&2
+		echo "$0 <directory> [ ... ]"	 >&2
+		echo ""	 >&2
+		echo "List all extensions in the named directories"	 >&2
+		echo ""	 >&2
+		;;
+
+	-*)	# Ignore any other flag-type options, silently
+		;;
+
+	*)
+		# We got a non minus-sign based argument, so assume it is a dir
+		DIR="${arg}"
+
+		# If something is rotten in the state of Denmark, bail out
+		if [ ! -d ${DIR} ]
+		then
+			echo "${DIR} is not a directory!  Aborting!" >&2
+			exit 1
+		fi
+
+		# Change to this directory, and list all of the files
+		(
+			cd ${DIR}
+			for filepath in *
+			do
+				## basename and dirname assist in parsing paths
+				fileonly=`basename "${filepath}"`
+
+				# use expr to determine if the name has a dot in it
+				if [ `expr "${fileonly}" : ".*[.].*"` -gt 0 ]
+				then
+					# note the three part pipe, the backquotes, and the
+					# use of sed here
+					ext=`echo ${fileonly} | tr 'A-Z' 'a-z' | sed -e 's/.*[.]//'`
+					echo $ext >> ${TMP_EXTENSIONS}
+				fi
+			done
+		)
+		;;
+	esac
+done
+
+# figure out whether we in fact saw anything . . .
+if [ -s ${TMP_EXTENSIONS} ]
+then
+
+	# At this point, ${TMP_EXTENSIONS} will have every extension seen, so
+	# we want to collapse this list to simply have only unique entries.
+	# Most UNIX type systems (but not quite all) have a command uniq(1)
+	# that does this.  On most of these systems, sort(1) and uniq(1) are
+	# acutally hard-linked together
+	sort -u ${TMP_EXTENSIONS}
+
+	# Clean up, as we are done
+	rm -f ${TMP_EXTENSIONS}
+fi
+
+# return status at end of script will be that of the last command run,
+# if no explicit exit status is given
+

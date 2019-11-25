@@ -1,0 +1,82 @@
+#!/bin/sh
+#
+# Demonstration of exporting variables.  Note that I have
+# used CAPITALS for variables that are exported just to
+# make it clear -- there is no requirement to do this,
+# though it is a common naming convention
+#
+
+top_a="variable a"
+TOP_B="variable b"
+
+export TOP_B
+
+echo "At top level:"
+echo "    top_a is ${top_a}"
+echo "    TOP_B is ${TOP_B}"
+echo "PID is $$"
+
+# putting things in round brackets starts a new sub-shell,
+# so variables will only be visible inside the brackets if
+# they are "exported".
+# Once a variable is "exported" it is called an "environment
+# variable"
+(
+    echo "In subshell, PID is $$"
+	mid_c="mid variable c"
+	MID_D="mid variable D"
+	export MID_D
+
+	echo "In first subshell:"
+	echo "    top_a is ${top_a}"
+	echo "    TOP_B is ${TOP_B}"
+
+	echo "    mid_c is ${mid_c}"
+	echo "    MID_D is ${MID_D}"
+
+	(
+        echo "In subshell inside subshell, PID is $$"
+		inner_e="inner variable e"
+		INNER_F="inner variable F"
+
+		# if we had further sub-shells, F would be valid in them
+		export INNER_F
+
+		echo "In inner subshell:"
+		echo "    top_a is ${top_a}"
+		echo "    TOP_B is ${TOP_B}"
+
+		echo "    mid_c is ${mid_c}"
+		echo "    MID_D is ${MID_D}"
+
+		echo "    inner_e is ${inner_e}"
+		echo "    INNER_F is ${INNER_F}"
+
+        echo "I am in:"`pwd`
+        cd /tmp
+        echo "Now I am in:"`pwd`
+	)
+    echo "After subshell, I am in:"`pwd`
+
+	echo "Back in mid, after inner subshell:"
+	echo "    top_a is ${top_a}"
+	echo "    TOP_B is ${TOP_B}"
+
+	echo "    mid_c is ${mid_c}"
+	echo "    MID_D is ${MID_D}"
+
+	echo "    inner_e is ${inner_e}"
+	echo "    INNER_F is ${INNER_F}"
+
+)
+
+echo "Back at top:"
+echo "    top_a is ${top_a}"
+echo "    TOP_B is ${TOP_B}"
+
+echo "    mid_c is ${mid_c}"
+echo "    MID_D is ${MID_D}"
+
+echo "    inner_e is ${inner_e}"
+echo "    INNER_F is ${INNER_F}"
+

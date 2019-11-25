@@ -1,0 +1,15 @@
+
+CXX			= g++
+CXXFLAGS	= -g -fPIC
+
+LIB		= libT++.so
+OBJS	= T.o C.o
+
+
+$(LIB):	$(OBJS)
+	$(CXX) -shared -Wl,-soname,$(LIB) -o $(LIB) $(OBJS)
+
+clean:
+	- rm -f $(LIB)
+	- rm -f $(OBJS)
+

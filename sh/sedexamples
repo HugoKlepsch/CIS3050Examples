@@ -1,0 +1,111 @@
+#!/bin/sh
+
+#
+# This file is less of a script, and more a series of examples using
+# sed(1), the "stream editor"
+#
+# If you wish to redirect the output of this script, placing stdout
+# together with stderr, you can use the operator 2>&1 at the end
+# of the line, as in:
+#	./sedexamples > /tmp/foo 2>&1
+#  or
+#	( ./sedexamples 2>&1 ) | more
+
+
+# force -x mode to print everything before running it
+set -x
+
+# search and replace -- summer changes to winter (once per line)
+sed 's/summer/winter/' < sonnet.txt
+
+# search and replace using regular expressions -- sed 's'
+# command syntax:
+#   s:search:replace:options
+# s - the command
+# : - character after s is the delimiter
+# search - an extended regular expression
+# replace - string to replace with
+# options - any of
+#    g - replace globally (all occurrences of pattern)
+#    [0-9] - replace Nth pattern instead of first
+#    p - print edited pattern space to stdout
+
+# search and replace using the search string: '&' places the search match
+# into the replacement string
+sed 's/^[^ ]*/[&]/' < sonnet.txt
+
+# search and replace -- 'e' to '?' (once per line)
+sed 's/e/?/' < sonnet.txt
+
+# search and replace -- second 'e' to '?' (once per line)
+sed 's/e/?/2' < sonnet.txt
+
+# search and replace -- 'e' to '?' (all occurrences)
+sed 's/e/?/g' < sonnet.txt
+
+# replace all three-letter words
+sed 's/ [a-z][a-z][a-z] /-=-/g' < sonnet.txt
+
+
+# range limits can preceed the command
+sed '/gold/,/death/ s/[aeiou]/#/g' < sonnet.txt
+
+# Selective printing -- command "p"
+# Most useful with flag "-n" that suppresses
+# printing by default
+
+# printing out selective lines is possible, using print
+sed -n '6,8 p' < sonnet.txt
+sed -n '/gold/,/death/ p' < sonnet.txt
+sed -n '8,/gold/ p' < sonnet.txt
+
+# using search
+sed -n '/gold/,/death/ s/[aeiou]/#/gp' < sonnet.txt
+
+# using deletion
+sed '/gold/,/death/ d' < sonnet.txt
+
+
+##
+## Performing edits: based on ed(1) and similar to vi(1),
+## commands are:
+##  d - delete (line)
+##  a - append after (line)
+##  i - insert before (line)
+##  c - change (line)
+sed '7a\
+(or maybe June, actually)\
+' < sonnet.txt
+
+sed '$a\
+Who was the first computer programmer\
+' < adaquote.txt
+
+sed '1a\
+-=- Where does this end up?
+' < adaquote.txt
+
+sed '1i\
+-=- How about this?
+' < adaquote.txt
+
+# changing some text (note that the range matches _lines_, not position on line)
+sed '/weaves/,/leaves/ c\
+REDACTED!\
+' < adaquote.txt
+
+# use of \( \) expressions provides substrings that can be manipulated using \[0-9]
+sed 's/\([A-Z][a-z]*\) \([A-Za-z][a-z]*\)$/\2 \1/' < adaquote.txt
+
+
+## remove all of the HTML tags in a file, then remove all blank lines
+sed -e '/</{
+:loop
+s/<[^<]*>//g
+/</{
+N
+b loop
+}
+}' -e '/^$/d' sample.html
+
+

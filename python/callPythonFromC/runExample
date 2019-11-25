@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -x
+
+python2 purePython.py
+
+./call multiplier multiply 5 6
+

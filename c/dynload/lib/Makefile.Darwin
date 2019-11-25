@@ -1,0 +1,15 @@
+
+
+CFLAGS	= -g -fPIC
+
+LIB		= libTdarwin.so
+OBJS	= T.o 
+
+
+$(LIB):	$(OBJS)
+	$(CC) -dynamiclib -Wl,-dylib,-o,$(LIB) $(OBJS)
+
+clean:
+	- rm -f $(LIB)
+	- rm -f $(OBJS)
+

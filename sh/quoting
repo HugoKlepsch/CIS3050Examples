@@ -1,0 +1,47 @@
+#!/bin/sh
+
+# This file simple has some example of expression in single
+# and double quotes, adn the use of different ways
+# of quoting quotes (putting a quote character into a quoted
+# string)
+
+A="This is only a T.  E.  S.  T. "
+echo '${A}='"${A}"
+
+B="This is only a \"T.  E.  S.  T. \""
+echo '${B}='"${B}"
+
+C="This is only a 'T.  E.  S.  T. '"
+echo '${C}='"${C}"
+
+D='This is only a "T.  E.  S.  T. "'
+echo '${D}='"${D}"
+
+E='I said "This is only a '"'T.  E.  S.  T. '"'"'
+echo '${E}='"${E}"
+
+F="I said 'This is only a "'"T.  E.  S.  T. "'"'"
+echo '${F}='"${F}"
+
+G='I said "This is only a '\''T.  E.  S.  T. '\''"'
+echo '${G}='"${G}"
+
+echo
+
+# `back quotes` substitute the result of the contained command:
+echo "The current date and time is "`date`
+
+# echo by itself just generates a new line
+echo
+
+# variable substitution occurs before the command line is broken up into
+# space delimited segments
+b="ec"
+e="ho"
+
+first="That has sur"
+last="prising results"
+
+# we paste together the results of the variable before running the result
+$b$e $first$last
+

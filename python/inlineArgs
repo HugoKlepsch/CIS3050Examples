@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# This shows some "inline" python scripting
+
+echo '$@=['"$@"']'
+
+echo "Now in Python:"
+python -c '
+import sys
+import string
+
+# Print out our arguments
+
+print "All of sys.argv: ", sys.argv
+
+sys.stdout.write("Now one per line:\n");
+for i in range(0, len(sys.argv)):
+	sys.stdout.write("%d : [%s]\n" % (i, sys.argv[i]))
+
+' - "$@"
+

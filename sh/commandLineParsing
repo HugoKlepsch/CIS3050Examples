@@ -1,0 +1,60 @@
+#!/bin/sh
+
+#
+# Here is a common way to process the command line.  Note the use
+# of "shift" to eat the options as we go, so that the variable
+# "$@" contains all of the non-option flags.
+#
+# This pattern is one of the reasons that it is frequently quite
+# important to put all of the options to the left of the first
+# non-option argument
+#
+# Note that this works because the shifts affect the values of $@
+# _after_ the list for the for loop has been expanded, therefore
+# the for loop proceeds through the values of $@ as though there
+# was no shifting.
+#
+
+# set up some variables to set based on the flags -a -b -c
+A="NO"
+B="NO"
+C="NO"
+
+for arg in "$@"
+do
+	case "${arg}" in
+	-a*)
+        A="YES"
+        shift
+		;;
+
+	-b*)
+        B="YES"
+        shift
+		;;
+
+	-c*)
+        C="YES"
+        shift
+		;;
+
+	-*) # eat any additional flags
+        echo "Ignoring unknown argument '$arg'" >&2
+        shift
+		;;
+
+	*)  # we have seen a non-flag argument, so use break to bail out,
+        # at this point, $@ will have had all of the flags removed
+        # through the shifting done above
+        break
+		;;
+	esac
+done
+
+echo "Status after flags:"
+echo "  A=$A"
+echo "  B=$B"
+echo "  C=$C"
+echo ""
+echo "  @=""$@"
+

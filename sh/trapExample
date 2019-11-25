@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# This script uses trap to flag ^C attempts"
+
+trap "echo 'I got a ^C'!  Bye!" 2
+
+echo "Type data and I will repeat it - type quit and I will exit"
+echo "I also will report any uses of ^C"
+while read line
+do
+    echo "Saw: ${line}"
+    if [ X"${line}" = X"quit" ]
+    then
+        exit 0
+    fi
+done
+

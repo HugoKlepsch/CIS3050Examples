@@ -1,0 +1,48 @@
+#
+# Build up the whole thing, SWIG and all
+#
+# $Id: makefile 365 2007-03-09 18:50:45Z andrew $
+#
+
+CC			= gcc
+INCLUDES	= -I/usr/include/python2.7
+CFLAGS		= -g -fPIC -Wall $(INCLUDES)
+LDFLAGS		= -static
+
+
+OBJS		= simple.o simple_wrap.o
+TARGLIB		= _simple.so
+
+
+
+$(TARGLIB) : $(OBJS)
+	$(CC) -shared $(OBJS) -o $(TARGLIB)
+
+# Note -- on SElinux derived systems, we used to need to do this
+#	chcon -t textrel_shlib_t $(TARGLIB)
+# to label the library as a shared lib.  On fran this is not
+# necessary at the moment, as the SElinux security contexts
+# are turned off, and are not supported on shared filesystems
+# in any case.
+#
+# If you are doing work on a machine that supports security contexts
+# you may find one of these to be helpful
+#	chcon -t system_u:object_r:httpd_sys_content_t  $(TARGLIB)
+#	chcon -t system_u:object_r:textrel_shlib_t:s0 $(TARGLIB)
+
+
+simple_wrap.c : simple.i
+	swig3.0 $(INCLUDES) -python simple.i
+
+test : $(TARGLIB)
+	python ./testit.py
+
+clean :
+	@ echo "cleaning up!"
+	- rm -f $(TARGLIB)
+	- rm -f $(OBJS)
+	- rm -f simple.py
+	- rm -f simple.pyc
+	- rm -f simple_wrap.c
+	- rm -f simple.so
+

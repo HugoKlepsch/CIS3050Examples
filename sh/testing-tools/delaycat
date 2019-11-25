@@ -1,0 +1,24 @@
+#!/bin/sh
+
+#
+# Process the input data only after a given amount of time has elapsed
+#
+
+if [ $# -lt 1 ]
+then
+    echo "Error: Number of seconds to sleep required" >&2
+    exit 1
+fi
+
+if [ ! "$1" -eq "$1" ]
+then
+    echo "Error: Argument '$1' is not a valid integer number of seconds to sleep" >&2
+    exit 1
+fi
+
+{
+    echo "Sleeping for $1 seconds"
+    sleep $1
+    cat
+}
+

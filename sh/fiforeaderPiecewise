@@ -1,0 +1,34 @@
+#!/bin/sh
+
+#
+# Read all the data available from a FIFO as a series of separate open+reads
+#
+
+if [ $# -ne 1 ]
+then
+    echo "Need the name of the FIFO to read from" >&2
+    exit -1
+fi
+
+# give the FIFO value a better name
+fifo=$1
+
+if [ ! -p $fifo ]; then
+    echo "The FIFO ${fifo} doesn't exist - is a writing running?"
+    exit 1
+fi
+
+# loop infinitely, and break if we see a request to 'quit'
+while read line < $fifo
+do
+    if [ "$line" = 'quit' ]
+    then
+        # leave the while loop
+        break
+    fi
+    # print out what we got
+    echo $line
+done
+
+# 
+echo "Reader exiting"

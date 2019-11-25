@@ -1,0 +1,23 @@
+#!/bin/sh
+
+## make sure arguments make some sense
+if [ $# -ne 2 -o X"$1" = X"-h" ]
+then
+    echo "$0 <filename> <length>" >&2
+    echo "" >&2
+    echo "Create file of given length" >&2
+    exit -1
+fi
+
+## make sure that the number of bytes is a number
+if [ ! "$2" -eq "$2" ]
+then
+    echo "Error: Argument '$2' is not a valid integer number of seconds to sleep" >&2
+    exit 1
+fi
+
+FILENAME="$1"
+COUNT="$2"
+
+dd if=/dev/zero of="${FILENAME}" bs=1 count=${COUNT}
+
